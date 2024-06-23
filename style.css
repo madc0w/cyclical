@@ -1,0 +1,25 @@
+body {
+    background-color: antiquewhite;
+    font-family: Lato;
+}
+
+
+.button {
+    border-radius: 8px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #222 !important;
+    padding: 8px;
+    background-color: #44993d;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 4px 4px 8px 2px #888;
+    color: white;
+    font-size: 18px;
+    width: 80px;
+}
+
+.button:hover {
+    background-color: #444;
+}
+

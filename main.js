@@ -94,9 +94,9 @@ function draw() {
 function addBall() {
 	balls.push({
 		id: balls.length,
-		theta: Math.PI / 2,
+		theta: -Math.PI / 2,
 		vel: (Math.random() - 0.5) * 0.02,
-		r: 4 + Math.random() * 12,
+		r: 8 + Math.random() * 20,
 		color: '#f22',
 	});
 }

@@ -46,17 +46,21 @@ function draw() {
 			// }
 			if (
 				ball2 != ball &&
-				theta1 < boundTheta(theta2 + 0.1) &&
-				theta1 > boundTheta(theta2 - 0.1)
+				theta1 < boundTheta(theta2 + 0.02) &&
+				theta1 > boundTheta(theta2 - 0.02)
 			) {
 				const key = [ball.id, ball2.id].sort().join('-');
 				// console.log('collision', ball.id, ball2.id, t, key);
-				if (!lastCollisionTimes[key] || t - lastCollisionTimes[key] > 20) {
-					console.log('unique collision', ball.id, ball2.id);
+				if (!lastCollisionTimes[key] || t - lastCollisionTimes[key] > 40) {
+					// console.log('unique collision', ball.id, ball2.id, t);
 					lastCollisionTimes[key] = t;
+
+					const gradient = ctx.createRadialGradient(x, y, 0, x, y, 200);
+					gradient.addColorStop(0, '#fff');
+					gradient.addColorStop(1, '#fff0');
+					ctx.fillStyle = gradient;
 					ctx.beginPath();
-					ctx.arc(x, y, 22, 0, twoPi);
-					ctx.fillStyle = '#fff';
+					ctx.arc(x, y, 200, 0, twoPi);
 					ctx.fill();
 				}
 			}

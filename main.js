@@ -6,7 +6,7 @@ const size = 800;
 const r = size * 0.4;
 const balls = [];
 const twoPi = Math.PI * 2;
-const lastCollisionTimes = {};
+const collisions = {};
 
 function load() {
 	canvas = document.getElementById('canvas');
@@ -30,6 +30,29 @@ function draw() {
 	ctx.strokeStyle = '#002';
 	ctx.stroke();
 
+	for (const key in collisions) {
+		const collision = collisions[key];
+		const x = collision.center.x;
+		const y = collision.center.y;
+		const r = 120 - 0.8 * (t - collision.time);
+		const gradient = ctx.createRadialGradient(x, y, 0, x, y, r);
+		const opacity = 255 - (t - collision.time);
+		if (r <= 0 || opacity <= 0) {
+			delete collisions[key];
+		} else {
+			let opacityHex = opacity.toString(16);
+			if (opacityHex.length < 2) {
+				opacityHex = '0' + opacityHex;
+			}
+			gradient.addColorStop(0, '#ffffff' + opacityHex);
+			gradient.addColorStop(1, '#fff0');
+			ctx.fillStyle = gradient;
+			ctx.beginPath();
+			ctx.arc(x, y, r, 0, twoPi);
+			ctx.fill();
+		}
+	}
+
 	for (const ball of balls) {
 		const x = center.x + r * Math.cos(ball.theta);
 		const y = center.y + r * Math.sin(ball.theta);
@@ -51,17 +74,12 @@ function draw() {
 			) {
 				const key = [ball.id, ball2.id].sort().join('-');
 				// console.log('collision', ball.id, ball2.id, t, key);
-				if (!lastCollisionTimes[key] || t - lastCollisionTimes[key] > 40) {
+				if (!collisions[key] || t - collisions[key].time > 40) {
 					// console.log('unique collision', ball.id, ball2.id, t);
-					lastCollisionTimes[key] = t;
-
-					const gradient = ctx.createRadialGradient(x, y, 0, x, y, 200);
-					gradient.addColorStop(0, '#fff');
-					gradient.addColorStop(1, '#fff0');
-					ctx.fillStyle = gradient;
-					ctx.beginPath();
-					ctx.arc(x, y, 200, 0, twoPi);
-					ctx.fill();
+					collisions[key] = {
+						time: t,
+						center: { x, y },
+					};
 				}
 			}
 		}

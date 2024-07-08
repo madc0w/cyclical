@@ -7,6 +7,9 @@ const r = size * 0.4;
 const balls = [];
 const twoPi = Math.PI * 2;
 const collisions = {};
+const baseUrl = 'https://madc0w.github.io/mad-music';
+const audioCtx = new AudioContext();
+const buffers = {};
 
 function load() {
 	canvas = document.getElementById('canvas');
@@ -19,6 +22,7 @@ function load() {
 		y: canvas.height / 2,
 	};
 
+	loadClips();
 	draw();
 }
 
@@ -80,6 +84,12 @@ function draw() {
 						time: t,
 						center: { x, y },
 					};
+
+					const source = audioCtx.createBufferSource();
+					source.connect(audioCtx.destination);
+					const b = ball.r > ball2.r ? ball : ball2;
+					source.buffer = buffers[b.clip.fileName];
+					source.start();
 				}
 			}
 		}
@@ -95,9 +105,12 @@ function addBall() {
 	balls.push({
 		id: balls.length,
 		theta: -Math.PI / 2,
-		vel: (Math.random() - 0.5) * 0.02,
+		// vel:
+		// 	0.004 * ((Math.random() < 0.5 ? 1 : -1) * Math.ceil(Math.random() * 8)),
+		vel: 0.004 * Math.ceil(Math.random() * 8),
 		r: 8 + Math.random() * 20,
 		color: '#f22',
+		clip: clips[Math.floor(Math.random() * 20)],
 	});
 }
 
@@ -107,4 +120,19 @@ function boundTheta(theta) {
 		bounded += twoPi;
 	}
 	return bounded;
+}
+
+function loadClips() {
+	for (const clip of clips) {
+		const request = new XMLHttpRequest();
+		const url = `${baseUrl}/${clip.fileName}.mp3`;
+		request.open('GET', url, true);
+		request.responseType = 'arraybuffer';
+		request.onload = () => {
+			audioCtx.decodeAudioData(request.response, (audioBuffer) => {
+				buffers[clip.fileName] = audioBuffer;
+			});
+		};
+		request.send();
+	}
 }
